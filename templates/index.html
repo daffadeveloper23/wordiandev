@@ -1,0 +1,173 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wordian</title>
+    <link rel="stylesheet" href="{% static 'styles/style.css' %}" />
+    <script defer src="{% static 'js/script.js' %}"></script>
+  </head>
+  <body>
+    <header>
+      <img
+        class="logo"
+        src="{% static 'images/Wordian_lite_2-removebg-preview.png' %}"
+        alt="logo"
+      />
+      <nav class="navbar">
+        <a href="#">About</a>
+        <a href="#">Features</a>
+        <a href="#">Partnership</a>
+        <button data-modal-target="#signin-modal" class="signupBtn-in">Sign In</button>
+        <button data-modal-target="#modal" class="signupBtn">Sign Up</button>
+      </nav>
+    </header>
+    {% if messages %}
+      {% for message in messages %}
+        <div class="message">
+          <p>{{ message }}</p>
+          <p class="closebtn">X</p>
+        </div>
+      {% endfor %}
+    {% endif %}
+    <main>
+      <div class="textbox">
+        <div class="container">
+          <span class="text first-text">Start </span>
+          <span class="text sec-text"></span>
+        </div>
+
+        <p class="desc">Access easier, grow faster</p>
+        <button data-modal-target="#modal" class="signupBtn" style="margin-left: 0; width: fit-content;">Get Started</button>
+      </div>
+      <img
+        class="ilustrasi"
+        src="{% static 'images/undraw_creative_thinking_re_9k71.svg' %}"
+        alt=""
+      />
+    </main>
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <h1 class="title">Join Wordian.</h1>
+        <button data-close-button class="close-button">&times;</button>
+      </div>
+      <hr class="border-bawah">
+      <div class="modal-body">
+        <form action="{% url 'signup' %}" method="POST" class="signup-form">
+          {% csrf_token %}
+          <label class="input-label" for="username">Username</label>
+          <br>
+          <input type="text" class="input-field" name="username" id="username" required>
+          <label for="email" class="input-label">Email</label>
+          <br>
+          <input type="email" class="input-field" name="email" id="email" required>
+          <label for="password" class="input-label">Password</label>
+          <br>
+          <input type="password" class="input-field" name="password" id="password" required>
+          <p class="show-password show1">Show Password</p>
+          <label for="password2" class="input-label">Confirm Password</label>
+          <br>
+          <input type="password" class="input-field" name="password2" id="password2" required>
+          <p class="show-password show2">Show Password</p>
+          <label class="input-label">Gender</label>
+          <br>
+          <div class="gender-radio">
+            <input type="radio" id="male" name="gender" value="Male">
+            <label for="male">Male</label>
+            <input type="radio" id="female" name="gender" value="Female">
+            <label for="female">Female</label>
+          </div>
+          <label class="input-label" for="birth-date">Birth Date</label>
+          <br>
+          <input class="input-field" type="date" name="birth-date" id="birth-date" required>
+          <button type="submit" class="submit-signup-form">Sign Up</button>
+        </form>
+      </div>
+    </div>
+    <div class="modal" id="signin-modal">
+      <div class="modal-header">
+        <h1 class="title">Welcome Back.</h1>
+        <button data-close-button class="close-button">&times;</button>
+      </div>
+      <hr class="border-bawah">
+      <div class="modal-body">
+        <form action="{% url 'signin' %}" class="signin-form" method="POST">
+          {% csrf_token %}
+          <label for="signin-username" class="input-label">Username</label>
+          <br>
+          <input type="text" class="input-field" name="signin-username" id="signin-username">
+          <label for="signin-password" class="input-label">Password</label>
+          <br>
+          <input type="password" class="input-field" name="signin-password" id="signin-password">
+          <p class="show-password show3">Show Password</p>
+          <button type="submit" class="submit-signup-form">Sign In</button>
+        </form>
+      </div>
+    </div>
+    <div id="overlay"></div>
+    <article class="features">
+      <section class="feature feature1">
+        <div class="featuretext">
+          <h1 class="text1">Write</h1>
+          <p class="desc1">Experience the power of collaborative creativity within our app. Write articles together in real-time, seamlessly
+          collaborating with friends, colleagues, or fellow enthusiasts. Witness your ideas evolve and take shape as you create,
+          edit, and refine your content together.</p>
+        </div>
+        
+        <img class="featureBG featureBG1" src="{% static 'images/desk-3076954_1280.jpg' %}" alt="">
+        
+      </section>
+      <section class="feature feature2">
+        <div class="featuretext">
+          <h1 class="text2">Read</h1>
+          <p class="desc2">Explore our vast library of free, legal, and secure literature. Highlight intriguing passages, bookmark your favorites,
+          and effortlessly share inspiring quotes. Immerse yourself in the world of literature within our user-friendly app.
+          </p>
+        </div>
+        <img src="{% static 'images/glasses-1052010_1280.jpg' %}" alt="" class="featureBG featureBG2">
+      </section>
+      <section class="feature feature3">
+        <div class="featuretext">
+          <h1 class="text3">Share</h1>
+          <p class="desc3">Publish your articles to revolutionize the way we share knowledge. Become a verified contributor and elevate your work
+          to a trusted scientific source, fostering a community of readers, reviewers, and thinkers.
+          </p>
+        </div>
+        <img src="{% static 'images/puzzle-3223941_1280.jpg' %}" alt="" class="featureBG featureBG3">
+      </section>
+    </article>
+
+    
+
+    <script>
+      const text = document.querySelector(".sec-text");
+
+      const textLoad = () => {
+        setTimeout(() => {
+          text.textContent = "writing";
+        }, 0);
+        setTimeout(() => {
+          text.textContent = "reading";
+        }, 4000);
+        setTimeout(() => {
+          text.textContent = "sharing";
+        }, 8000);
+      };
+
+      textLoad();
+      setInterval(textLoad, 12000);
+
+      // Close error notification
+      let closebtn = document.querySelector('.closebtn')
+      let messagebar = document.querySelector('.message')
+
+      closebtn.addEventListener('click', () => {
+        messagebar.style.display = 'none'
+      })
+
+
+    </script>
+  </body>
+</html>

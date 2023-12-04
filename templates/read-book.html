@@ -1,0 +1,169 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ literature.title }}</title>
+    <link rel="stylesheet" href="{% static 'styles/read-book.css' %}">
+    <script src="https://kit.fontawesome.com/7f0d38f651.js" crossorigin="anonymous"></script>
+    
+
+</head>
+<body>
+    <div class="read-section">
+        <iframe src="{{ literature.source_url }}"></iframe>
+    </div>
+    <div class="note-section">
+        <section class="note-header">
+            <button class="new-note"><i class="fa-solid fa-plus new-mark"></i><span>New Note</span></button>
+            <button class="load-note" data-modal-target="#modal"><i class="fa-solid fa-bars-progress"></i>Load Note</button>
+        </section>
+        <section class="note-body" style="display: block;">
+            <form action="{% url 'make-note' %}" class="note-form new-form" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="literature_id" value="{{ literature.id }}">
+                <input type="text" name="note-title" class="note-title" placeholder="Note title...">
+                <textarea name="note-content" id="note-content" cols="30" rows="10" class="note-content" placeholder="Start your note..."></textarea>
+                <button type="submit" class="save-note"><i class="fa-solid fa-floppy-disk"></i>Save Note</button>
+            </form>
+
+            <form action="{% url 'update_note' %}" class="note-form load-form" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="literature_id" value="{{ literature.id }}">
+                <input type="hidden" class="noteID" name="noteID" value="">
+                <input type="text" name="note-title" class="note-title load-title" placeholder="Note title..." disabled>
+                <textarea name="note-content" id="note-content" cols="30" rows="10" class="note-content load-content"
+                    placeholder="Start your note..."></textarea>
+                <button type="submit" class="save-note"><i class="fa-solid fa-floppy-disk"></i>Save Note</button>
+            </form>
+        </section>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-header">
+            <h1 class="modal-header-title">Load your note</h1>
+            <button data-close-button class="close-button"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+
+            {% for note in all_notes %}
+                <form action="#" class="note-instance" style="margin-bottom: 15px;">
+                    {% csrf_token %}
+                    <button type="submit" class="load-instance">
+                        <h1 class="instance-title">{{ note.title }}</h1>
+                        <p>{{ note.date }}</p>
+                        <p class="instance-content" style="display: none;">{{ note.note }}</p>
+                        <p class="note-real-title" style="display: none;">{{ note.title }}</p>
+                        <p class="note-id" style="display: none;">{{ note.id }}</p>
+                    </button>
+                </form>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="overlay"></div>
+
+    <script src="{% static 'js/read-book.js' %}"></script>
+
+    <script>
+        // Limit the characters
+
+        const titleElement = document.querySelectorAll('.instance-title')
+
+        function limitText(element, limit) {
+            const text = element.textContent
+            if (text.length > limit) {
+                const truncatedText = text.substring(0, limit - 3) + '...'
+                element.textContent = truncatedText
+            }
+        }
+
+        titleElement.forEach((title) => {
+            limitText(title, 60)
+        })
+
+
+        // Testing
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const testButton = document.querySelector('.new-note')
+        //     testButton.addEventListener('click', () => {
+        //         alert("Halo")
+        //     })
+        // })
+
+        // Load note
+        document.addEventListener('DOMContentLoaded', function () {
+            const noteForms = document.querySelectorAll('.note-instance');
+            noteForms.forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();
+
+                    const noteTitle = this.querySelector('.note-real-title').textContent.trim();
+                    const noteContent = this.querySelector('.instance-content').textContent.trim();
+                    const noteID = this.querySelector('.note-id').textContent.trim();
+
+                    // Set the note title and content to the textarea
+                    const noteTitleInput = document.querySelector('.load-title');
+                    const noteContentTextarea = document.querySelector('.load-content');
+                    const noteIDInput = document.querySelector('.noteID')
+
+                    noteTitleInput.value = noteTitle;
+                    noteContentTextarea.value = noteContent;
+                    noteIDInput.value = noteID;
+
+                    // Close the modal or perform any other actions if needed
+                    const modal = document.getElementById('modal');
+                    const overlay = document.getElementById('overlay');
+                    const loadForm = document.querySelector('.load-form');
+
+                    modal.classList.remove('active');
+                    overlay.classList.remove('active');
+                    loadForm.style.display('block')
+                });
+            });
+        });
+
+        // Show and hide note form
+        let newNoteButon = document.querySelector('.new-note')
+        let loadNoteButton = document.querySelector('.load-note')
+        let newForm = document.querySelector('.new-form')
+        let loadForm = document.querySelector('.load-form')
+
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            newForm.style.display = "none";
+            loadForm.style.display = "none";
+
+            // newForm.classList.toggle('active')
+            // newNoteButon.classList.toggle('active')
+
+            // if (noteBody.classList.contains('active')) {
+            //     newNoteButon.innerHTML = '<i class="fa-solid fa-xmark new-mark"></i>Close'
+            // } else {
+            //     newNoteButon.innerHTML = '<i class="fa-solid fa-plus new-mark"></i>New Note';
+            // }
+        });
+
+        loadNoteButton.addEventListener('click', function () {
+            if (newForm.style.display == "none" && loadForm.style.display == "none" || newForm.style.display == "block") {
+                newForm.style.display = "none"
+                loadForm.style.display = "block"
+            } 
+        })
+
+        newNoteButon.addEventListener('click', function () {
+            if (loadForm.style.display == "none" && newForm.style.display == "none" || loadForm.style.display == "block") {
+                loadForm.style.display = "none"
+                newForm.style.display = "block"
+                newNoteButon.innerHTML = '<i class ="fa-solid fa-xmark new-mark"></i>Close'
+            } else if (newForm.style.display == "block") {
+                newForm.style.display = "none"
+                newNoteButon.innerHTML = '<i class ="fa-solid fa-plus new-mark"></i>New Note'
+            }
+        })
+    </script>
+</body>
+</html>

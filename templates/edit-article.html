@@ -1,0 +1,163 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Article</title>
+    <link rel="stylesheet" href="{% static 'styles/writing-page.css' %}">
+    <script src="https://kit.fontawesome.com/7f0d38f651.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.tiny.cloud/1/a2z2b2vh998fxc5effkk7udpc9d4rfsj1gkpcc92h4wajpgq/tinymce/6/tinymce.min.js"
+        referrerpolicy="origin"></script>
+</head>
+
+<body>
+    <header>
+        <div class="logo-search">
+            <img class="logo" src="{% static 'images/Wordian_lite_2-removebg-preview.png' %}" alt="logo" />
+
+        </div>
+
+        <nav class="navbar">
+            <a href="{% url 'library' %}">Library</a>
+            <a href="{% url 'index' %}">Home</a>
+            <a href="#">Hooks</a>
+            <a href="#"><i class="fa-regular fa-bell"></i></a>
+            <button data-modal-target="#modal" class="profile-menu">
+                <div class="image-frame">
+                    <img src="{{ profile.profileimg.url }}" alt="">
+                </div>
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+        </nav>
+        <div class="profile-bar">
+            <a href="{% url 'profile' pk=request.user.username %}">
+                <i class="fa-solid fa-user"></i>
+                Profile
+            </a>
+            <a href="{% url 'draft-list' pk=request.user.username %}">
+                <i class="fa-solid fa-bookmark"></i>
+                Draft
+            </a>
+            <a href="#">
+                <i class="fa-solid fa-comment"></i>
+                Message
+            </a>
+        
+            <hr>
+            <a href="{% url 'my-setting' pk=request.user.username %}">
+                Settings
+            </a>
+            <a href="#">
+                Help
+            </a>
+            <hr>
+            <a href="#">
+                Upgrade to Pro
+            </a>
+            <a href="#">
+                Become Verified Publisher
+            </a>
+            <hr>
+            <a href="{% url 'signout' %}">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Sign Out
+            </a>
+        </div>
+    </header>
+    <main>
+        <div class="form-frame">
+            <form action="" method="POST" enctype="multipart/form-data" id="article-form">
+                {% csrf_token %}
+                <div class="input-frame">
+                    <label for="title" class="title-label">Title</label>
+                    <textarea placeholder="Title for the article" id="title" name="title"
+                        oninput="autoResize(this)" required>{{ current_article.title }}</textarea>
+                </div>
+                <div class="input-frame">
+                    <label for="subtitle" class="subtitle-label">Subtitle</label>
+                    <textarea placeholder="Short caption about the article" id="subtitle" name="subtitle"
+                        oninput="autoResize(this)" required>{{current_article.subtitle }}</textarea>
+                </div>
+                <div class="input-frame">
+                    <div class="uploadedimg-frame" style="display: block;">
+                        <img id="image-preview" src="{{ current_article.cover_image.url }}" alt="">
+                    </div>
+                    <label for="image-upload" class="image-label">Choose cover image</label>
+                    <input type="file" name="cover-image" id="image-upload" accept="image/*">
+                </div>
+                <div class="input-frame">
+                    <label for="article-category" class="category-label">Choose article category</label>
+                    <select name="category" id="article-category" required>
+                        <option value="" disabled>Choose category</option>
+                        <option value="History" {% if current_article.category == 'History' %} selected {% endif %}>History</option>
+                        <option value="Opinion" {% if current_article.category =='Opinion' %} selected {% endif %}>Opinion</option>
+                        <option value="Other" {% if current_article.category =='Other' %} selected {% endif %}>Other</option>
+                    </select>
+                </div>
+                <div class="input-frame">
+                    <textarea name="article-content" id="article-content" cols="30" rows="10" required>{{ current_article.content }}</textarea>
+                </div>
+                <input type="hidden" value="{{ current_article.id }}" name="article-id">
+                <div class="buttons">
+                    <button type="button" id="save-draft">Save as draft</button>
+                    <button type="button" id="publish-article">Publish</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+
+
+    <script src="{% static 'js/edit-article.js' %}"></script>
+
+
+    <script>
+        tinymce.init({
+            selector: 'textarea#article-content',
+            plugins: 'accordion lists advlist image link autolink autosave charmap codesample directionality emoticons fullscreen wordcount hr media preview quickbars searchreplace table template',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough fullscreen | accordion accordionremove | image media table mergetags link hr | align lineheight template | codesample preview searchreplace | checklist numlist bullist indent outdent ltr rtl | emoticons charmap | removeformat',
+            // Image toolbar additional setting
+            file_picker_types: 'image',
+            file_picker_callback: (cb, value, meta) => {
+                const input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                input.setAttribute('accept', 'image/*');
+
+                input.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+
+                    const reader = new FileReader();
+                    reader.addEventListener('load', () => {
+                        /*
+                          Note: Now we need to register the blob in TinyMCEs image blob
+                          registry. In the next release this part hopefully won't be
+                          necessary, as we are looking to handle it internally.
+                        */
+                        const id = 'blobid' + (new Date()).getTime();
+                        const blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                        const base64 = reader.result.split(',')[1];
+                        const blobInfo = blobCache.create(id, file, base64);
+                        blobCache.add(blobInfo);
+
+                        /* call the callback and populate the Title field with the file name */
+                        cb(blobInfo.blobUri(), { title: file.name });
+                    });
+                    reader.readAsDataURL(file);
+                });
+
+                input.click();
+            },
+            image_caption: true,
+            image_advtab: true,
+            image_description: false,
+
+            // Table toolbar option
+            table_toolbar: 'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
+        })
+    </script>
+</body>
+
+</html>

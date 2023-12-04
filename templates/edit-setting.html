@@ -1,0 +1,72 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <link rel="stylesheet" href="{% static 'styles/edit-setting.css' %}">
+</head>
+
+<body>
+    <div class="form-frame">
+        <form action="{% url 'update-setting' %}" class="setting-form" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="image-setting">
+                <div class="image-frame">
+                    <img src="{{ user_profile.profileimg.url }}" alt="" class="profile-picture">
+                </div>
+                <div class="image-upload">
+                    <h1 class="username">@{{ user_profile.user.username }}</h1>
+                    <label for="image">Change profile picture</label>
+                    <input type="file" name="image" id="image">
+                </div>
+            </div>
+
+            <div class="input-form">
+                <label for="first">First Name</label>
+                <input type="text" id="first" name="first" class="input-inside" value="{{ user_profile.first_name }}" required>
+            </div>
+
+            <div class="input-form">
+                <label for="last">Last Name</label>
+                <input type="text" id="last" name="last" class="input-inside" value="{{ user_profile.last_name }}" required>
+            </div>
+
+            <div class="input-form">
+                <label for="email">Email</label>
+                {% if user_profile.verified_email %}
+                    <input type="email" id="email" name="email" class="input-inside" disabled value="{{ user_profile.email }}">
+                {% else %}
+                    <input type="email" id="email" name="email" class="input-inside" value="{{ user_profile.email }}" required>
+                {% endif %}
+            </div>
+
+            <div class="input-form">
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" class="input-inside"
+                    value="{{ user_profile.location }}" required>
+            </div>
+
+            <div class="input-form">
+                <label for="bio">Bio</label>
+                <textarea name="bio" style="resize: none;" id="bio" cols="30" rows="10"
+                    class="textarea-inside" required>{{ user_profile.bio }}</textarea>
+            </div>
+
+            <div class="input-form">
+                <div>
+                    <input type="hidden" name="username" value="{{ user_object.username }}">
+                    <input type="hidden" name="initiated-email" value="{{ user_object.email }}">
+                    <input type="submit" value="Save" class="submit-form">
+                    <a href="{% url 'my-setting' pk=user_object.username %}" class="back-button">Back</a>
+                </div>
+                
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

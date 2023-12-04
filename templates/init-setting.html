@@ -1,0 +1,57 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initial Setup</title>
+    <link rel="stylesheet" href="{% static 'styles/init-setting.css' %}">
+</head>
+<body>
+    <div class="form-frame">
+        <form action="{% url 'setting' %}" class="setting-form" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="image-setting">
+                <div class="image-frame">
+                    <img src="{{ user_profile.profileimg.url }}" alt="" class="profile-picture">
+                </div>
+                <div class="image-upload">
+                    <h1 class="username">@{{ user_profile.user.username }}</h1>
+                    <label for="image">Change profile picture</label>
+                    <input type="file" name="image" id="image">
+                </div>
+            </div>
+
+            <div class="input-form">
+                <label for="first">First Name</label>
+                <input type="text" id="first" name="first" class="input-inside" value="{{ user_profile.first_name }}">
+            </div>
+
+            <div class="input-form">
+                <label for="last">Last Name</label>
+                <input type="text" id="last" name="last" class="input-inside" value="{{ user_profile.last_name }}">
+            </div>
+
+            <div class="input-form">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" class="input-inside" disabled value="{{ user_profile.email }}">
+            </div>
+
+            <div class="input-form">
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" class="input-inside" value="{{ user_profile.location }}">
+            </div>
+
+            <div class="input-form">
+                <label for="bio">Bio</label>
+                <textarea name="bio" style="resize: none;" id="bio" cols="30" rows="10" class="textarea-inside">{{ user_profile.bio }}</textarea>
+            </div>
+
+            <div class="input-form">
+                <input type="submit" value="Save" class="submit-form">
+            </div>
+        </form>
+    </div>
+</body>
+</html>

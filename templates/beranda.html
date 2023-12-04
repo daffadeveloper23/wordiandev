@@ -1,0 +1,146 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordian</title>
+    <link rel="stylesheet" href="{% static 'styles/home.css' %}">
+    <script src="https://kit.fontawesome.com/7f0d38f651.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <div class="logo-search">
+            <img class="logo" src="{% static 'images/Wordian_lite_2-removebg-preview.png' %}" alt="logo" />
+            <div class="search-frame">
+                <form action="{% url 'search' %}" method="POST">
+                    {% csrf_token %}
+                    <label for="search-article"><i class="fa-solid fa-magnifying-glass"></i></label>
+                    <input type="text" name="search-title" placeholder="Search for article..." class="search-article" id="search-article">
+                </form>
+                
+            </div>
+        </div>
+        
+        <nav class="navbar">
+            <a href="{% url 'library' %}">Library</a>
+            <a href="{% url 'writing-article' %}">Write</a>
+            <a href="#">Hooks</a>
+            <a href="#"><i class="fa-regular fa-bell"></i></a>
+            <button data-modal-target="#modal" class="profile-menu">
+                <div class="image-frame">
+                    <img src="{{ user_profile.profileimg.url }}" alt="">
+                </div>
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+        </nav>
+        <div class="profile-bar">
+            <a href="{% url 'profile' pk=request.user.username %}">
+                <i class="fa-solid fa-user"></i>
+                Profile
+            </a>
+            <a href="{% url 'draft-list' pk=request.user.username %}">
+                <i class="fa-solid fa-bookmark"></i>
+                Draft
+            </a>
+            <a href="#">
+                <i class="fa-solid fa-comment"></i>
+                Message
+            </a>
+            
+            <hr>
+            <a href="{% url 'my-setting' pk=request.user.username %}">
+                Settings
+            </a>
+            <a href="#">
+                Help
+            </a>
+            <hr>
+            <a href="#">
+                Upgrade to Pro
+            </a>
+            <a href="#">
+                Become Verified Publisher
+            </a>
+            <hr>
+            <a href="{% url 'signout' %}">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Sign Out
+            </a>
+        </div>
+    </header>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message">
+                <p>{{ message }}</p>
+                <p class="closebtn">X</p>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <main>
+        <div class="container">
+            <div class="content-nav">
+                <a href="#">+</a>
+                <a href="#" class="active">For You</a>
+                <a href="#">Following</a>
+            </div>
+            <div class="content-grid">
+                {% for content in published_content reversed %}
+                    <div class="content-container">
+                        <a href="{% url 'read_article' id=content.id %}" class="content-link">
+                            <div class="cover-frame">
+                                <img src="{{ content.cover_image.url }}" alt="">
+                            </div>
+                            <h1 class="content-title" title="{{ content.title }}">{{ content.title }}</h1>
+                            <p class="content-desc" title="{{ content.subtitle }}">{{ content.subtitle }}</p>
+                        </a>
+
+                        <div class="content-footer">
+                            <div class="footer-frame">
+                                <img src="{{ content.author_profile.profileimg.url }}" alt="">
+                            </div>
+                            <div class="author-identity">
+                                <a href="{% url 'profile' pk=content.author.username %}" class="author">{{ content.author.username }}</a>
+                                <a href="#" class="category">{{ content.category }}</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+
+
+    <script src="{% static 'js/home.js' %}"></script>
+    <script>
+        const titleElement = document.querySelectorAll('.content-title')
+        const descElement = document.querySelectorAll('.content-desc')
+
+        function limitText(element, limit) {
+            const text = element.textContent
+            if (text.length > limit) {
+                const truncatedText = text.substring(0, limit - 3) + '...'
+                element.textContent = truncatedText
+            }
+        }
+
+        descElement.forEach((desc) => {
+            limitText(desc, 100)
+        })
+
+        titleElement.forEach((title) => {
+            limitText(title, 45)
+        })
+
+        // Close error notification
+        let closebtn = document.querySelector('.closebtn')
+        let messagebar = document.querySelector('.message')
+
+        closebtn.addEventListener('click', () => {
+            messagebar.style.display = 'none'
+        })
+
+    </script>
+</body>
+</html>

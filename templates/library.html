@@ -1,0 +1,122 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordian Library</title>
+    <script src="https://kit.fontawesome.com/7f0d38f651.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{% static 'styles/library.css' %}">
+</head>
+<body>
+    <header>
+        <div class="logo-search">
+            <img class="logo" src="{% static 'images/Wordian_lite_2-removebg-preview.png' %}" alt="logo" />
+    
+        </div>
+    
+        <nav class="navbar">
+            <a href="{% url 'writing-article' %}">Write</a>
+            <a href="{% url 'index' %}">Home</a>
+            <a href="#">Hooks</a>
+            <a href="#"><i class="fa-regular fa-bell"></i></a>
+            <button data-modal-target="#modal" class="profile-menu">
+                <div class="image-frame">
+                    <img src="{{ user_profile.profileimg.url }}" alt="">
+                </div>
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+        </nav>
+        <div class="profile-bar">
+            <a href="{% url 'profile' pk=request.user.username %}">
+                <i class="fa-solid fa-user"></i>
+                Profile
+            </a>
+            <a href="{% url 'draft-list' pk=request.user.username %}">
+                <i class="fa-solid fa-bookmark"></i>
+                Draft
+            </a>
+            <a href="#">
+                <i class="fa-solid fa-comment"></i>
+                Message
+            </a>
+        
+            <hr>
+            <a href="{% url 'my-setting' pk=request.user.username %}">
+                Settings
+            </a>
+            <a href="#">
+                Help
+            </a>
+            <hr>
+            <a href="#">
+                Upgrade to Pro
+            </a>
+            <a href="#">
+                Become Verified Publisher
+            </a>
+            <hr>
+            <a href="{% url 'signout' %}">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Sign Out
+            </a>
+        </div>
+    </header>
+    <main>
+        <div class="bookshelf-grid">
+
+            {% for literature in literatures %}
+                <section class="book-instance">
+                    <div class="cover-area">
+                        <div class="cover-flex">
+                            <div class="cover-frame">
+                                <img src="{{ literature.cover_image.url }}" alt="">
+                            </div>
+                        </div>
+                        
+                        <div class="cover-identity-flex">
+                            <div class="cover-identity">
+                                <h1 class="book-title" title="{{ literature.title }}">{{ literature.title }}</h1>
+                                <p>by {{ literature.author }}</p>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="action-area">
+                        <a href="{% url 'read_book' id=literature.id %}" class="action-read" target="_blank">Read</a>
+                    </div>
+                    <div class="description-area">
+                        <p class="book-description">{{ literature.description }}</p>
+                    </div>
+                </section>
+            {% endfor %}
+        </div>
+    </main>
+
+    <script src="{% static 'js/library.js' %}"></script>
+
+    <script>
+        const bookDesc = document.querySelectorAll('.book-description')
+        const bookTitles = document.querySelectorAll('.book-title')
+
+
+        function limitText(element, limit) {
+            const text = element.textContent
+            if (text.length > limit) {
+                const truncatedText = text.substring(0, limit - 3) + '...'
+                element.textContent = truncatedText
+            }
+        }
+
+        bookDesc.forEach((desc) => {
+            limitText(desc, 300)
+        })
+
+        bookTitles.forEach((title) => {
+            limitText(title, 90)
+        })
+
+    </script>
+</body>
+</html>

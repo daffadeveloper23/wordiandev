@@ -1,0 +1,95 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Setup</title>
+    <link rel="stylesheet" href="{% static 'styles/my-setting.css' %}">
+</head>
+
+<body>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message">
+                <p>{{ message }}</p>
+                <p class="closebtn">X</p>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <div class="form-frame">
+        <div class="setting-form">
+            <div class="image-setting">
+                <div class="image-frame">
+                    <img src="{{ profile_object.profileimg.url }}" alt="" class="profile-picture">
+                </div>
+                <div class="image-upload">
+                    <h1 class="username">@{{ profile_object.user.username }}</h1>
+                    
+                </div>
+            </div>
+
+            <div class="input-form">
+                <label for="first">First Name</label>
+                <input type="text" id="first" name="first" class="input-inside" disabled value="{{ profile_object.first_name }}">
+            </div>
+
+            <div class="input-form">
+                <label for="last">Last Name</label>
+                <input type="text" id="last" name="last" class="input-inside" disabled value="{{ profile_object.last_name }}">
+            </div>
+
+            <div class="input-form">
+                <label for="email">Email</label>
+                <div class="email-form">
+                    <input type="email" id="email" name="email" class="input-inside" disabled value="{{ profile_object.email }}">
+                    {% if profile_object.verified_email %}
+                        <div class="email-verification-form">
+                            <div class="email-verification-button">Verified</div>
+                        </div>
+                    {% else %}
+                        <form action="{% url 'verify-email' %}" method="POST" class="email-verification-form">
+                            {% csrf_token %}
+                            <input type="hidden" value="{{ user_object.username }}" name="username">
+                            <input type="hidden" value="{{ profile_object.email }}" name="email">
+                            <button type="submit" class="email-verification-button">Verify Email</button>
+                        </form>
+                    {% endif %}
+                </div>
+                
+            </div>
+
+            <div class="input-form">
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" class="input-inside" disabled value="{{ profile_object.location }}">
+            </div>
+
+            <div class="input-form">
+                <label for="bio">Bio</label>
+                <textarea name="bio" style="resize: none;" id="bio" cols="30" rows="10"
+                    class="textarea-inside" disabled>{{ profile_object.bio }}</textarea>
+            </div>
+
+            <div class="input-form">
+                
+                <a href="{% url 'edit-setting' pk=user_object.username %}" class="edit-form">Edit</a>
+                <a href="{% url 'profile' pk=user_object.username %}" class="submit-form">Back</a>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Close error notification
+        let closebtn = document.querySelector('.closebtn')
+        let messagebar = document.querySelector('.message')
+
+        closebtn.addEventListener('click', () => {
+            messagebar.style.display = 'none'
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,170 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'styles/profile.css' %}">
+    <script src="https://kit.fontawesome.com/7f0d38f651.js" crossorigin="anonymous"></script>
+    <title>Profile</title>
+</head>
+<body>
+    <header>
+        <div class="logo-search">
+            <img class="logo" src="{% static 'images/Wordian_lite_2-removebg-preview.png' %}" alt="logo" />
+             
+        </div>
+    
+        <nav class="navbar">
+            <a href="{% url 'library' %}">Library</a>
+            <a href="{% url 'index' %}">Home</a>
+            <a href="#">Hooks</a>
+            <a href="#"><i class="fa-regular fa-bell"></i></a>
+            <button data-modal-target="#modal" class="profile-menu">
+                <div class="image-frame">
+                    <img src="{{ current_user_profile.profileimg.url }}" alt="">
+                </div>
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+        </nav>
+        <div class="profile-bar">
+            <a href="{% url 'profile' pk=request.user.username %}">
+                <i class="fa-solid fa-user"></i>
+                Profile
+            </a>
+            <a href="{% url 'draft-list' pk=request.user.username %}">
+                <i class="fa-solid fa-bookmark"></i>
+                Draft
+            </a>
+            <a href="#">
+                <i class="fa-solid fa-comment"></i>
+                Message
+            </a>
+        
+            <hr>
+            <a href="{% url 'my-setting' pk=request.user.username %}">
+                Settings
+            </a>
+            <a href="#">
+                Help
+            </a>
+            <hr>
+            <a href="#">
+                Upgrade to Pro
+            </a>
+            <a href="#">
+                Become Verified Publisher
+            </a>
+            <hr>
+            <a href="{% url 'signout' %}">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Sign Out
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <section class="account-profile">
+            <div class="profile-picture-section">
+                <div class="profile-picture-frame">
+                    <img src="{{ user_profile.profileimg.url }}" alt="">
+                </div>
+            </div>
+            <div class="account-info-section">
+                <div class="account-interaction">
+                    <h1 class="username">{{ user_object.username }}</h1>
+                    {% if request.user != user_object %}
+                        <form action="{% url 'follow' %}" class="follow-form" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" value="{{ user_object.username }}" name="user">
+                            <input type="hidden" value="{{ request.user.username }}" name="follower">
+                            {% if active_following %}
+                                <button type="submit" class="follow-button">Unfollow</button>
+                            {% else %}
+                                <button type="submit" class="follow-button">Follow</button>
+                            {% endif %}
+                        </form>
+                        <!--
+                        <a href="#" class="message-button account-button">Message</a>
+                        -->
+                    {% else %}
+                        <a href="{% url 'my-setting' pk=request.user.username %}" class="account-button">Profile</a>
+                        <a href="{% url 'draft-list' pk=request.user.username %}" class="account-button">My draft</a>
+                    {% endif %}
+                </div>
+                <div class="account-follower">
+                    {% if user_article_count < 2 %}
+                        <p class="post-amount">{{ user_article_count }} post</p>
+                    {% else %}
+                        <p class="post-amount">{{ user_article_count }} posts</p>
+                    {% endif %}
+                    <a href="#" class="follower-amount">{{ follower_count }} followers</a>
+                    <a href="#" class="following-amount">{{ following_count }} following</a>
+                </div>
+                <div class="full-name-bio">
+                    <span class="first-name">{{ user_profile.first_name }}</span>
+                    <span class="second-name">{{ user_profile.last_name }}</span>
+                    <p class="bio">{{ user_profile.bio }}</p>
+                </div>
+            </div>
+        </section>
+        <section class="posted-article-section">
+            <h1>Posted article</h1>
+
+            {% if user_article_count > 0 %}
+                {% for article in user_article reversed %}
+                    <div class="post-instance">
+                        <div class="article-identity">
+                            <div class="cover-frame">
+                                <img src="{{ article.cover_image.url }}" alt="">
+                            </div>
+                            <div class="article-title-frame">
+                                <h1 class="article-title">
+                                    {{ article.title }}
+                                </h1>
+                                <span class="article-date">
+                                    {{ article.created_at }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="article-action">
+                            <a href="{% url 'read_article' id=article.id %}" title="Read article"><i class="fa-solid fa-eye"></i></a>
+                            {% if request.user == user_object %}
+                                <a href="{% url 'edit-article' pk=article.id %}" title="Edit article"><i class="fa-solid fa-pen-to-square"></i></a>
+                                <a href="{% url 'remove-article' pk=article.id %}" title="Remove article"><i class="fa-solid fa-trash"></i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <h3>There is no article yet</h3>
+            {% endif %}
+
+
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-social-media">
+                <a href="#"><i class="fa-brands fa-square-facebook"></i></a>
+                <a href="#"><i class="fa-brands fa-square-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-square-twitter"></i></a>
+            </div>
+            <div class="footer-menu">
+                <a href="#">Contact</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Support</a>
+                <a href="#">Career</a>
+            </div>
+            <p class="footer-copyright">&copy; 2023 <a href="#" class="literazzy">Wordian</a> All Rights Reserved
+            </p>
+        </div>
+    </footer>
+
+
+    <script src="{% static 'js/profile.js' %}"></script>
+</body>
+</html>

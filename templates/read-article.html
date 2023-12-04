@@ -1,0 +1,328 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Read Article</title>
+    <link rel="stylesheet" href="{% static 'styles/read-article.css' %}">
+    <script src="https://kit.fontawesome.com/7f0d38f651.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <header>
+        <div class="logo-search">
+            <a href="#">
+                <img class="logo" src="{% static 'images/Wordian_lite_2-removebg-preview.png' %}" alt="logo" />
+            </a>
+
+        </div>
+
+        <nav class="navbar">
+            <a href="{% url 'library' %}">Library</a>
+            <a href="{% url 'index' %}">Home</a>
+            <a href="#">Hooks</a>
+            <a href="#"><i class="fa-regular fa-bell"></i></a>
+            <button data-modal-target="#modal" class="profile-menu">
+                <div class="image-frame">
+                    <img src="{{ user.profileimg.url }}" alt="">
+                </div>
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+        </nav>
+        <div class="profile-bar">
+            <a href="{% url 'profile' pk=request.user.username %}">
+                <i class="fa-solid fa-user"></i>
+                Profile
+            </a>
+            <a href="{% url 'draft-list' pk=request.user.username %}">
+                <i class="fa-solid fa-bookmark"></i>
+                Draft
+            </a>
+            <a href="#">
+                <i class="fa-solid fa-comment"></i>
+                Message
+            </a>
+        
+            <hr>
+            <a href="{% url 'my-setting' pk=request.user.username %}">
+                Settings
+            </a>
+            <a href="#">
+                Help
+            </a>
+            <hr>
+            <a href="#">
+                Upgrade to Pro
+            </a>
+            <a href="#">
+                Become Verified Publisher
+            </a>
+            <hr>
+            <a href="{% url 'signout' %}">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Sign Out
+            </a>
+        </div>
+    </header>
+    <main>
+        <div class="article-container">
+            <h1>{{ article.title }}</h1>
+            <h3>{{ article.subtitle }}</h3>
+
+
+            <div class="author-info">
+                <div class="info-image-frame">
+                    <img src="{{ article.author_profile.profileimg.url }}" alt="">
+                </div>
+                <div class="info-text-container">
+                    <form action="{% url 'follow-from-article' %}" class="name-follow" method="POST">
+                        {% csrf_token %}
+                        <a href="{% url 'profile' pk=article.author.username %}" class="author-name">{{ article.author.username }}</a>
+                        {% if request.user != article.author %}
+                            <input type="hidden" name="follower" value="{{ request.user.username }}">
+                            <input type="hidden" name="user" value="{{ article.author.username }}">
+                            <input type="hidden" name="article_id" value="{{ article.id }}">
+                            {% if is_following %}
+                                <button type="submit" class="follow-author">Unfollow</button>
+                            {% else %}
+                                <button type="submit" class="follow-author">Follow</button>
+                            {% endif %}
+                        {% endif %}
+                    </form>
+                    <p>{{ article.created_at }}</p>
+                </div>
+            </div>
+
+
+            <div class="reader-interaction">
+                <div class="main-interaction">
+                    <form action="{% url 'like-article' %}" method="POST" style="display: inline-block;">
+                        {% csrf_token %}
+                        <button type="submit" class="like-article">
+                            <input type="hidden" value="{{ article.id }}" name="article_id">
+                            {% if user_likes_it %}
+                                <i class="fa-solid fa-heart"></i>
+                            {% else %}
+                                <i class="fa-regular fa-heart"></i>
+                            {% endif %}
+                            <span>{{ like_count }}</span>
+                        </button>
+                    </form>
+                    
+                    <button class="comment-article">
+                        <i class="fa-regular fa-comment"></i>
+                        <span>{{ comment_count }}</span>
+                    </button>
+                    <button class="share-article">
+                        <i class="fa-solid fa-share"></i>
+                        <span>Share</span>
+                    </button>
+                </div>
+                <div class="additional-interaction">
+                    <button class="report-article">
+                        <i class="fa-solid fa-flag"></i>
+                        <span>Report</span>
+                    </button>
+                    <button class="donate">
+                        <i class="fa-solid fa-circle-dollar-to-slot"></i>
+                        <span>Donate</span>
+                    </button>
+                </div>
+            </div>
+
+
+            <div class="cover-frame">
+                <img src="{{ article.cover_image.url }}" alt="">
+            </div>
+
+
+            <div class="main-article">
+                {{ article.content | safe }}
+            </div>
+
+            <div class="reader-interaction">
+                <div class="main-interaction">
+                    <form action="{% url 'like-article' %}" method="POST" style="display: inline-block;">
+                        {% csrf_token %}
+                        <button type="submit" class="like-article">
+                            <input type="hidden" value="{{ article.id }}" name="article_id">
+                            {% if user_likes_it %}
+                                <i class="fa-solid fa-heart"></i>
+                            {% else %}
+                                <i class="fa-regular fa-heart"></i>
+                            {% endif %}
+                            <span>{{ like_count }}</span>
+                        </button>
+                    </form>
+                    <button class="comment-article">
+                        <i class="fa-regular fa-comment"></i>
+                        <span>{{ comment_count }}</span>
+                    </button>
+                    <button class="share-article">
+                        <i class="fa-solid fa-share"></i>
+                        <span>Share</span>
+                    </button>
+                </div>
+                <div class="additional-interaction">
+                    <button class="report-article">
+                        <i class="fa-solid fa-flag"></i>
+                        <span>Report</span>
+                    </button>
+                    <button class="donate">
+                        <i class="fa-solid fa-circle-dollar-to-slot"></i>
+                        <span>Donate</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="about-author">
+                <div class="about-image-frame">
+                    <img src="{{ article.author_profile.profileimg.url }}" alt="">
+                </div>
+                <form action="{% url 'follow-from-article' %}" method="POST" class="about-author-info">
+                    {% csrf_token %}
+                    <a href="#">
+                        Written by {{ article.author.username }}
+                    </a>
+                    {% if request.user != article.author %}
+                        <input type="hidden" name="follower" value="{{ request.user.username }}">
+                        <input type="hidden" name="user" value="{{ article.author.username }}">
+                        <input type="hidden" name="article_id" value="{{ article.id }}">
+                        {% if is_following %}
+                            <button type="submit" class="follow-author">Unfollow</button>
+                        {% else %}
+                            <button type="submit" class="follow-author">Follow</button>
+                        {% endif %}
+                    {% endif %}
+                </form>
+                <p class="author-bio">
+                    {{ article.author_profile.bio }}
+                </p>
+            </div>
+        </div>
+
+
+    </main>
+
+
+    <section class="comment-section">
+        <div class="comment-container">
+            <h1 class="comment-banner">Comment</h1>
+
+            <div class="write-comment">
+                <form action="{% url 'post-comment' %}" method="POST" class="comment-form">
+                    {% csrf_token %}
+                    <div class="comment-image-frame">
+                        <img src="{{ user.profileimg.url }}" alt="">
+                    </div>
+                    <input type="hidden" value="{{ user_object.username }}" name="username">
+                    <input type="hidden" value="{{ article.id }}" name="article_id">
+                    <aside class="comment-aside">
+                        <textarea name="comment" id="write-comment-body" cols="30" rows="5"
+                            placeholder="Write your comment..."></textarea>
+                        <button type="submit" class="post-comment">Post</button>
+                    </aside>
+                </form>
+            </div>
+
+            {% for comment in comments %}
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <div class="comment-image-frame">
+                            <img src="{{ comment.commentator_profile.profileimg.url }}" alt="">
+                        </div>
+                        <a href="#">{{ comment.commentator.username }}</a>
+                    </div>
+
+                    <div class="comment-body">
+                        <p>{{ comment.comment }}</p>
+                    </div>
+
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="read-others-section">
+        <h1 class="others-info">Read other articles</h1>
+        <div class="read-others-container">
+
+            {% for content in other_articles %}
+                <div class="read-others-instance">
+                    <a href="{% url 'read_article' id=content.id %}" class="link-instance">
+                        <div class="read-others-cover-frame">
+                            <img src="{{ content.cover_image.url }}" alt="">
+                        </div>
+                        <h1 class="read-others-title">{{ content.title }}</h1>
+                        <p class="read-others-subtitle">{{ content.subtitle }}</p>
+                    </a>
+
+                    <div class="read-others-footer">
+                        <div class="read-others-footer-frame">
+                            <img src="{{ content.author_profile.profileimg.url }}" alt="">
+                        </div>
+                        <div class="read-others-identity">
+                            <a href="{% url 'profile' pk=content.author.username %}" class="read-others-author">{{ content.author.username }}</a>
+                            <a href="#" class="read-others-category">Category</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+    </section>
+
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-social-media">
+                <a href="#"><i class="fa-brands fa-square-facebook"></i></a>
+                <a href="#"><i class="fa-brands fa-square-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-square-twitter"></i></a>
+            </div>
+            <div class="footer-menu">
+                <a href="#">Contact</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Support</a>
+                <a href="#">Career</a>
+            </div>
+            <p class="footer-copyright">&copy; 2023 <a href="#" class="literazzy">Literazzy, Inc.</a> All Rights
+                Reserved</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/read-article.js' %}"></script>
+
+
+    <script>
+        const authorBio = document.querySelector('.author-bio')
+        const readOthersTitle = document.querySelectorAll('.read-others-title')
+        const readOthersSubtitle = document.querySelectorAll('.read-others-subtitle')
+
+        function limitText(element, limit) {
+            const text = element.textContent
+            if (text.length > limit) {
+                const truncatedText = text.substring(0, limit - 3) + '...'
+                element.textContent = truncatedText
+            }
+        }
+
+        limitText(authorBio, 300)
+
+        readOthersTitle.forEach((title) => {
+            limitText(title, 50)
+        })
+
+        readOthersSubtitle.forEach((sub) => {
+            limitText(sub, 80)
+        })
+
+
+    </script>
+</body>
+
+</html>
