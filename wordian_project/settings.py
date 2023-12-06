@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure--qae2d*o9-y(5@b@ggmf!%j3l!6r()5n(objb7r@)t!1)k9tn7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -79,12 +79,8 @@ WSGI_APPLICATION = 'wordian_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'wordiandev',
-        'USER': 'admindev',
-        'PASSWORD': 'Igeneration1',
-        'HOST': 'wordiandev.cb6arxiccopv.ap-southeast-2.rds.amazonaws.com',
-        'PORT': '5432',
+       'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
