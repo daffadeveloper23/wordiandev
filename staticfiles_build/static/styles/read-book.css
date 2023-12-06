@@ -1,0 +1,171 @@
+@import url('https://fonts.googleapis.com/css2?family=AR+One+Sans&family=Poppins:wght@300&family=Raleway:wght@300&family=Roboto:wght@300&display=swap');
+
+:root {
+    --main: #f5f5f5;
+    --secondary: #f05454;
+    --third: #30475e;
+    --forth: #121212;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: var(--main);
+    overflow: hidden;
+    width: 100vw;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+}
+
+.read-section {
+    height: 100vh;
+    z-index: 1;
+}
+
+.read-section iframe {
+    height: 100%;
+    width: 100%;
+}
+
+
+.note-section {
+    z-index: 1;
+    height: 100vh;
+    background-color: var(--third);
+    padding: 15px;
+}
+
+.note-header {
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+.new-note, .load-note, .save-note {
+    padding: 10px;
+    border-radius: 15px;
+    background-color: var(--secondary);
+    border: none;
+    color: var(--main);
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.new-note i, .load-note i, .save-note i {
+    margin-right: 8px;
+}
+
+
+.note-body, .note-form {
+    
+    width: 100%;
+}
+
+.note-title {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--forth);
+    outline: none;
+    margin-bottom: 15px;
+}
+
+.note-content {
+    resize: none;
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    outline: none;
+    margin-bottom: 15px;
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 5;
+    transform: translate(-50%, -50%) scale(0);
+    transition: 200ms ease-in-out;
+    background-color: var(--main);
+    width: 700px;
+    height: 500px;
+    border-radius: 15px;
+    padding: 15px;
+}
+
+.modal.active {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+#overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, .5);
+    opacity: 0;
+    pointer-events: none;
+}
+
+#overlay.active {
+    pointer-events: all;
+    opacity: 1;
+    z-index: 3;
+}
+
+.modal-header {
+    display: flex;
+    border-bottom: 1px solid var(--forth);
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header-title {
+    font-size: 25px;
+}
+
+.close-button {
+    width: 27px;
+    height: 27px;
+    border-radius: 50%;
+    border: none;
+    background-color: var(--secondary);
+    color: var(--main);
+    cursor: pointer;
+}
+
+.modal-body {
+    width: 100%;
+    height: 400px;
+    margin: 20px 0;
+    overflow: scroll;
+    border: none;
+}
+
+.note-instance {
+    width: 100%;
+}
+
+.load-instance {
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+    border: none;
+    border-radius: 15px;
+    background-color: rgb(201, 189, 189);
+    cursor: pointer;
+}
+
+.load-instance:hover {
+    background-color: rgb(167, 159, 159);
+}
+
+.instance-title {
+    font-size: 20px;
+    font-weight: normal;
+}
