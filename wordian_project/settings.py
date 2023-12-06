@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure--qae2d*o9-y(5@b@ggmf!%j3l!6r()5n(objb7r@)t!1)k9tn7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -155,3 +155,5 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL =  None
 AWS_S3_VERITY = True
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+#CSRF_TRUSTED_ORIGINS = ['https://4afa-110-137-194-125.ngrok-free.app']
