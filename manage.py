@@ -6,8 +6,8 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    settings_module = 'wordian_project.deployment' if 'WEBSITE_HOSTNAME' in os.environ else 'wordian_project.settings'
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings_module)
+    # settings_module = 'wordian_project.deployment' if 'WEBSITE_HOSTNAME' in os.environ else 'wordian_project.settings'
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wordian_project.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
