@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure--qae2d*o9-y(5@b@ggmf!%j3l!6r()5n(objb7r@)t!1)k9tn7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = ['.vercel.app', '.now.sh', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -79,8 +79,12 @@ WSGI_APPLICATION = 'wordian_project.wsgi.application'
 
 DATABASES = {
     'default': {
-       'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+       'ENGINE': 'django.db.backends.postgresql',
+       'NAME': 'railway',
+       'USER': 'postgres',
+       'PASSWORD': '61a5352AE4a*FCD-D14fCCFD3ca*Be1D',
+       'HOST': 'monorail.proxy.rlwy.net',
+       'PORT': '51424',
     }
 }
 
