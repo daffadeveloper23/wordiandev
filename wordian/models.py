@@ -115,3 +115,9 @@ class LikeArticle(models.Model):
     
     def __str__(self):
         return f"{self.username} like on {self.article_id}"
+    
+class Testmigrate(models.Model):
+    stringtes = models.CharField(max_length=200)
+    
+    def __str__(self):
+        return self.stringtes
