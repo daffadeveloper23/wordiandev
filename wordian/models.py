@@ -54,8 +54,8 @@ class Article(models.Model):
     no_of_like = models.IntegerField(default=0)
     
     def save(self, *args, **kwargs):
-        new_image = compress(self.profileimg)
-        self.profileimg = new_image
+        new_image = compress(self.cover_image)
+        self.cover_image = new_image
         super().save(*args, **kwargs)
     
     def __str__(self):
