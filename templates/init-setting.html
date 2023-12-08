@@ -19,7 +19,7 @@
                 <div class="image-upload">
                     <h1 class="username">@{{ user_profile.user.username }}</h1>
                     <label for="image">Change profile picture</label>
-                    <input type="file" name="image" id="image">
+                    <input type="file" name="image" id="image" onchange="handleImageUpload(this)">
                 </div>
             </div>
 
@@ -53,5 +53,112 @@
             </div>
         </form>
     </div>
+
+    <script>
+        let inputImage = document.getElementById("image")
+        let imageFrame = document.querySelector(".image-frame")
+
+        let WIDTH = 400
+
+
+        inputImage.addEventListener('change', async (event) => {
+            let image_file = event.target.files[0];
+            let reader = new FileReader();
+            reader.readAsDataURL(image_file);
+
+            reader.onload = async (event) => {
+                let image_url = event.target.result;
+                let image = document.createElement("img");
+                image.src = image_url;
+
+                let currentImage = document.querySelector(".profile-picture");
+                currentImage.remove();
+
+                // Add loading indicator
+                let loadingIndicator = document.createElement("div");
+                loadingIndicator.innerText = "Processing...";
+                imageFrame.appendChild(loadingIndicator);
+
+                image.onload = async (e) => {
+                    let maxWidth = 400; // Set your desired maximum width
+                    let maxHeight = 400; // Set your desired maximum height
+
+                    let canvas = document.createElement("canvas");
+                    let width = e.target.width;
+                    let height = e.target.height;
+
+                    // Resize image if it exceeds maxWidth or maxHeight
+                    if (width > maxWidth || height > maxHeight) {
+                        let ratio = Math.min(maxWidth / width, maxHeight / height);
+                        width *= ratio;
+                        height *= ratio;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const context = canvas.getContext("2d");
+                    context.drawImage(image, 0, 0, width, height);
+
+                    let new_image_url = canvas.toDataURL("image/jpeg", 0.8);
+
+                    let originalFilename = image_file.name;
+                    let compressedFilename = `compressed_${originalFilename}`;
+
+                    let new_image = document.createElement("img");
+                    new_image.src = new_image_url;
+                    new_image.classList.add("profile-picture");
+
+                    // Remove loading indicator
+                    loadingIndicator.remove();
+
+                    imageFrame.appendChild(new_image);
+
+                    // Convert resized image back to file
+                    dataURLtoFile(new_image_url, compressedFilename).then((file) => {
+                        // Replace the original file input with the resized file
+                        event.target.files = [file];
+                    });
+                };
+            };
+        });
+
+        // Function to convert data URL to File
+        async function dataURLtoFile(dataurl, filename) {
+            return new Promise((resolve, reject) => {
+                const arr = dataurl.split(',');
+                const mime = arr[0].match(/:(.*?);/)[1];
+                const bstr = atob(arr[1]);
+                let n = bstr.length;
+                const u8arr = new Uint8Array(n);
+                while (n--) {
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                resolve(new File([u8arr], filename, { type: mime }));
+            });
+        }
+
+        function handleImageUpload(input) {
+            let maxSizeInBytes = 3 * 1024 * 1024; // 3 MB (adjust as needed)
+            let errorMessage = "";
+
+            if (input.files && input.files[0]) {
+                let imageFile = input.files[0];
+
+                // Check if the file size exceeds the maximum size
+                if (imageFile.size > maxSizeInBytes) {
+                    errorMessage = "Image size exceeds the maximum allowed size. Maximum size is 3 MB";
+                    // Reset the file input (clear the selected file)
+                    input.value = "";
+                }
+            }
+
+            // Display an error message if needed
+            if (errorMessage) {
+                alert(errorMessage); // You can customize this to display the error in your UI
+            }
+        }
+
+    </script>
 </body>
 </html>

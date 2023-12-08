@@ -86,15 +86,15 @@
                         <img id="image-preview" src="{{ current_article.cover_image.url }}" alt="">
                     </div>
                     <label for="image-upload" class="image-label">Choose cover image</label>
-                    <input type="file" name="cover-image" id="image-upload" accept="image/*">
+                    <input type="file" name="cover-image" id="image-upload" accept="image/*" onchange="handleImageUpload(this)">
                 </div>
                 <div class="input-frame">
                     <label for="article-category" class="category-label">Choose article category</label>
                     <select name="category" id="article-category" required>
                         <option value="" disabled>Choose category</option>
                         <option value="History" {% if current_article.category == 'History' %} selected {% endif %}>History</option>
-                        <option value="Opinion" {% if current_article.category =='Opinion' %} selected {% endif %}>Opinion</option>
-                        <option value="Other" {% if current_article.category =='Other' %} selected {% endif %}>Other</option>
+                        <option value="Opinion" {% if current_article.category == 'Opinion' %} selected {% endif %}>Opinion</option>
+                        <option value="Other" {% if current_article.category == 'Other' %} selected {% endif %}>Other</option>
                     </select>
                 </div>
                 <div class="input-frame">
@@ -157,6 +157,27 @@
             // Table toolbar option
             table_toolbar: 'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
         })
+
+        function handleImageUpload(input) {
+            let maxSizeInBytes = 2 * 1024 * 1024; // 3 MB (adjust as needed)
+            let errorMessage = "";
+
+            if (input.files && input.files[0]) {
+                let imageFile = input.files[0];
+
+                // Check if the file size exceeds the maximum size
+                if (imageFile.size > maxSizeInBytes) {
+                    errorMessage = "Image size exceeds the maximum allowed size. Maximum size is 2 MB";
+                    // Reset the file input (clear the selected file)
+                    input.value = "";
+                }
+            }
+
+            // Display an error message if needed
+            if (errorMessage) {
+                alert(errorMessage); // You can customize this to display the error in your UI
+            }
+        }
     </script>
 </body>
 

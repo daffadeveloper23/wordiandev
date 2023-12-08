@@ -44,6 +44,7 @@ imageInput.addEventListener('change', () => { // Show chosen image
         reader.readAsDataURL(file)
     } else {
         imagePreview.src = '#'
+        imageFrame.style.display = 'none'
     }
 })
 

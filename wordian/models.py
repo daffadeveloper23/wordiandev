@@ -53,6 +53,11 @@ class Article(models.Model):
     author_profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='authored_articles', default=None, null=True)
     no_of_like = models.IntegerField(default=0)
     
+    def save(self, *args, **kwargs):
+        new_image = compress(self.profileimg)
+        self.profileimg = new_image
+        super().save(*args, **kwargs)
+    
     def __str__(self):
         return self.title
    
