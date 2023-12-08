@@ -76,52 +76,67 @@
 
         let WIDTH = 400
 
-        inputImage.addEventListener('change', (event) => {
-            let image_file = event.target.files[0]
-            
-            let reader = new FileReader
-            reader.readAsDataURL(image_file)
+        inputImage.addEventListener('change', async (event) => {
+            let image_file = event.target.files[0];
+            let reader = new FileReader();
+            reader.readAsDataURL(image_file);
 
-            reader.onload = (event) => {
+            reader.onload = async (event) => {
+                let image_url = event.target.result;
+                let image = document.createElement("img");
+                image.src = image_url;
 
-                let image_url = event.target.result
+                let currentImage = document.querySelector(".profile-picture");
+                currentImage.remove();
 
-                let image = document.createElement("img")
-                image.src = image_url
+                // Add loading indicator
+                let loadingIndicator = document.createElement("div");
+                loadingIndicator.innerText = "Processing...";
+                imageFrame.appendChild(loadingIndicator);
 
-                let currentImage = document.querySelector(".profile-picture")
-                currentImage.remove()
+                image.onload = async (e) => {
+                    let maxWidth = 400; // Set your desired maximum width
+                    let maxHeight = 400; // Set your desired maximum height
 
-                image.onload = (e) => {
-                    let canvas = document.createElement("canvas")
-                    let ratio = WIDTH / e.target.width
-                    canvas.width = WIDTH
-                    canvas.height = e.target.height * ratio
+                    let canvas = document.createElement("canvas");
+                    let width = e.target.width;
+                    let height = e.target.height;
 
-                    const context = canvas.getContext("2d")
-                    context.drawImage(image, 0, 0, canvas.width, canvas.height)
+                    // Resize image if it exceeds maxWidth or maxHeight
+                    if (width > maxWidth || height > maxHeight) {
+                        let ratio = Math.min(maxWidth / width, maxHeight / height);
+                        width *= ratio;
+                        height *= ratio;
+                    }
 
-                    let new_image_url = context.canvas.toDataURL("image/jpeg", 0.8)
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const context = canvas.getContext("2d");
+                    context.drawImage(image, 0, 0, width, height);
+
+                    let new_image_url = canvas.toDataURL("image/jpeg", 0.8);
 
                     let originalFilename = image_file.name;
-                    let compressedFilename = `compressed_${originalFilename}`
+                    let compressedFilename = `compressed_${originalFilename}`;
 
-                    let new_image = document.createElement("img")
-                    new_image.src = new_image_url
-                    new_image.classList.add("profile-picture")
+                    let new_image = document.createElement("img");
+                    new_image.src = new_image_url;
+                    new_image.classList.add("profile-picture");
 
-                    imageFrame.appendChild(new_image)
+                    // Remove loading indicator
+                    loadingIndicator.remove();
 
-                    // Convert compressed image back to file
+                    imageFrame.appendChild(new_image);
+
+                    // Convert resized image back to file
                     dataURLtoFile(new_image_url, compressedFilename).then((file) => {
-                        // Replace the original file input with the compressed file
+                        // Replace the original file input with the resized file
                         event.target.files = [file];
                     });
-                }
-
-                
-            }
-        })
+                };
+            };
+        });
 
         // Function to convert data URL to File
         function dataURLtoFile(dataurl, filename) {
