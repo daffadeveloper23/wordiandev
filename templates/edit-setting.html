@@ -67,6 +67,77 @@
             </div>
         </form>
     </div>
+
+
+    <script>
+        let inputImage = document.getElementById("image")
+        let imageFrame = document.querySelector(".image-frame")
+        
+
+        let WIDTH = 400
+
+        inputImage.addEventListener('change', (event) => {
+            let image_file = event.target.files[0]
+            
+            let reader = new FileReader
+            reader.readAsDataURL(image_file)
+
+            reader.onload = (event) => {
+
+                let image_url = event.target.result
+
+                let image = document.createElement("img")
+                image.src = image_url
+
+                let currentImage = document.querySelector(".profile-picture")
+                currentImage.remove()
+
+                image.onload = (e) => {
+                    let canvas = document.createElement("canvas")
+                    let ratio = WIDTH / e.target.width
+                    canvas.width = WIDTH
+                    canvas.height = e.target.height * ratio
+
+                    const context = canvas.getContext("2d")
+                    context.drawImage(image, 0, 0, canvas.width, canvas.height)
+
+                    let new_image_url = context.canvas.toDataURL("image/jpeg", 0.8)
+
+                    let originalFilename = image_file.name;
+                    let compressedFilename = `compressed_${originalFilename}`
+
+                    let new_image = document.createElement("img")
+                    new_image.src = new_image_url
+                    new_image.classList.add("profile-picture")
+
+                    imageFrame.appendChild(new_image)
+
+                    // Convert compressed image back to file
+                    dataURLtoFile(new_image_url, compressedFilename).then((file) => {
+                        // Replace the original file input with the compressed file
+                        event.target.files = [file];
+                    });
+                }
+
+                
+            }
+        })
+
+        // Function to convert data URL to File
+        function dataURLtoFile(dataurl, filename) {
+            return new Promise((resolve, reject) => {
+                const arr = dataurl.split(',');
+                const mime = arr[0].match(/:(.*?);/)[1];
+                const bstr = atob(arr[1]);
+                let n = bstr.length;
+                const u8arr = new Uint8Array(n);
+                while (n--) {
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                resolve(new File([u8arr], filename, { type: mime }));
+            });
+        }
+    </script>
 </body>
 
 </html>
