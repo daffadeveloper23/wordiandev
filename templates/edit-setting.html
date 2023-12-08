@@ -21,7 +21,7 @@
                 <div class="image-upload">
                     <h1 class="username">@{{ user_profile.user.username }}</h1>
                     <label for="image">Change profile picture</label>
-                    <input type="file" name="image" id="image">
+                    <input type="file" name="image" id="image" onchange="handleImageUpload(this)">
                 </div>
             </div>
 
@@ -72,9 +72,9 @@
     <script>
         let inputImage = document.getElementById("image")
         let imageFrame = document.querySelector(".image-frame")
-        
 
         let WIDTH = 400
+        
 
         inputImage.addEventListener('change', async (event) => {
             let image_file = event.target.files[0];
@@ -139,7 +139,7 @@
         });
 
         // Function to convert data URL to File
-        function dataURLtoFile(dataurl, filename) {
+        async function dataURLtoFile(dataurl, filename) {
             return new Promise((resolve, reject) => {
                 const arr = dataurl.split(',');
                 const mime = arr[0].match(/:(.*?);/)[1];
@@ -153,9 +153,27 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            alert("Halo")
-        })
+        function handleImageUpload(input) {
+                let maxSizeInBytes = 3 * 1024 * 1024; // 3 MB (adjust as needed)
+                let errorMessage = "";
+
+                if (input.files && input.files[0]) {
+                    let imageFile = input.files[0];
+
+                    // Check if the file size exceeds the maximum size
+                    if (imageFile.size > maxSizeInBytes) {
+                        errorMessage = "Image size exceeds the maximum allowed size. Maximum size is 3 MB";
+                        // Reset the file input (clear the selected file)
+                        input.value = "";
+                    } 
+                }
+
+                // Display an error message if needed
+                if (errorMessage) {
+                    alert(errorMessage); // You can customize this to display the error in your UI
+                }
+            }
+
     </script>
 </body>
 
